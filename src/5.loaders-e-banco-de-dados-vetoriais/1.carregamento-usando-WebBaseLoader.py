@@ -1,6 +1,7 @@
+from dotenv import load_dotenv
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from dotenv import load_dotenv
+
 load_dotenv()
 
 loader = WebBaseLoader(web_paths=["https://www.langchain.com"])
@@ -11,4 +12,4 @@ chunks = splitter.split_documents(docs)
 
 for chunk in chunks:
     print(chunk)
-    print("-"*30)
+    print("-" * 30)

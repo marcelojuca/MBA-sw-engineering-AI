@@ -1,9 +1,8 @@
-from langchain_openai import ChatOpenAI
-from langchain.tools import tool
-from langchain.agents import create_react_agent, AgentExecutor
-from langchain.prompts import PromptTemplate
 from dotenv import load_dotenv
-
+from langchain.agents import AgentExecutor, create_react_agent
+from langchain.prompts import PromptTemplate
+from langchain.tools import tool
+from langchain_openai import ChatOpenAI
 
 load_dotenv()
 
