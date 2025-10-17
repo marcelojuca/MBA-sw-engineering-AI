@@ -9,9 +9,7 @@ load_dotenv()
 script_dir = os.path.dirname(os.path.abspath(__file__))
 pdf_path = os.path.join(script_dir, "sample.pdf")
 
-loader = PyPDFLoader(
-    file_path=pdf_path
-)
+loader = PyPDFLoader(file_path=pdf_path)
 docs = loader.load()
 
 splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
