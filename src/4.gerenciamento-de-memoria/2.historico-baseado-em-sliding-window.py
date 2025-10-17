@@ -22,6 +22,9 @@ prompt = ChatPromptTemplate.from_messages(
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 
+# The prepare_input layer is a safety valve that ensures your conversation stays within token
+# limits while maintaining relevant context, preventing both technical failures and irrelevant
+# context dilution.
 def prepare_inputs(payload: dict) -> dict:
     raw_history = payload.get("history", [])
     trimmed = trim_messages(
@@ -38,7 +41,6 @@ def prepare_inputs(payload: dict) -> dict:
 
 prepare = RunnableLambda(prepare_inputs)
 chain = prepare | prompt | llm
-
 session_store: dict[str, InMemoryChatMessageHistory] = {}
 
 
@@ -48,7 +50,7 @@ def get_session_history(session_id: str) -> InMemoryChatMessageHistory:
     return session_store[session_id]
 
 
-converstional_chain = RunnableWithMessageHistory(
+conversational_chain = RunnableWithMessageHistory(
     chain,
     get_session_history,
     input_messages_key="input",
@@ -58,16 +60,41 @@ converstional_chain = RunnableWithMessageHistory(
 config = {"configurable": {"session_id": "demo-session"}}
 
 # interactions
-resp1 = converstional_chain.invoke(
+resp1 = conversational_chain.invoke(
     {"input": "My name is Wesley. Reply only with 'OK' and do not mention my name."},
     config=config,
 )
 print("Assistant:", resp1.content)
 
-resp2 = converstional_chain.invoke(
+resp2 = conversational_chain.invoke(
     {"input": "Tell me a one-sentence fun fact. Do not mention my name."}, config=config
 )
 print("Assistant:", resp2.content)
 
-resp3 = converstional_chain.invoke({"input": "What is my name?"}, config=config)
+resp3 = conversational_chain.invoke({"input": "What is my name?"}, config=config)
 print("Assistant:", resp3.content)
+
+
+# Chain flow summary
+#   - 1. User input → RunnableWithMessageHistory
+#   - 2. Retrieves raw history from session_store
+#   - 3. prepare_inputs() → trim_messages() → Trimmed history
+#   - 4. Trimmed history injected into MessagesPlaceholder("history")
+#   - 5. Prompt + trimmed history + input → LLM
+#   - 6. Response saved to history (subject to future trimming)
+
+# Production Considerations
+# trim_messages(
+#     raw_history,
+#     token_counter=llm.get_num_tokens,  # Use actual tokenizer
+#     max_tokens=8000,                   # Model-appropriate limit
+#     strategy="last",
+#     start_on="human",
+#     include_system=True,
+#     allow_partial=True,                # Allow partial messages if needed
+# )
+
+# Advanced Features
+#   - Summary injection: Replace trimmed history with AI-generated summary
+#   - Relevance filtering: Keep only semantically relevant messages
+#   - Configurable limits: Per-session or global token budgets

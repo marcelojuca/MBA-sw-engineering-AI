@@ -11,14 +11,15 @@ def square(inputs: dict) -> dict:
     x = inputs["x"]
     return {"square_result": x * x}
 
-
+print("-"*50)
 result = square.invoke({"x": 10})
 print(result)
 
-model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 question_template = PromptTemplate(
-    input_variables=["name"], template="Hi, I am {name}. Tell me a joke with my name?"
+    input_variables=["name"], 
+    template="Hi, I am {name}. Tell me a joke with my name?"
 )
 
 question_template2 = PromptTemplate(
@@ -26,11 +27,13 @@ question_template2 = PromptTemplate(
     template="Tell me about the number {square_result}",
 )
 
-chain = question_template | model
-chain2 = square | question_template2 | model
+print("-"*50)
+chain = question_template | llm
+result = chain.invoke({"name": "John"})
+print(result.content)
+print("-"*50)
 
-# result = chain.invoke({"name": "John"})
-# print(result.content)
-
+chain2 = square | question_template2 | llm
 result2 = chain2.invoke({"x": 10})
 print(result2.content)
+print("-"*50)

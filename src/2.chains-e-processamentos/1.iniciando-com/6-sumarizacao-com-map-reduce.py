@@ -18,6 +18,7 @@ The subway sighs somewhere underground, a heartbeat rising.
 Neon still glows in the corners where night refused to retire.
 A cyclist cuts through the chorus, bright with chrome and momentum.
 The city clears its throat, the air turning a little less electric.
+
 Shoes hiss on concrete, a thousand small verbs of arriving.
 Dawn keeps its promises in the quiet rhythm of a waking metropolis.
 The morning light cascades through towering windows of steel and glass,
@@ -31,6 +32,7 @@ their voices mixing with the distant hum of construction.
 Pigeons dance between the feet of hurried workers,
 finding crumbs of breakfast pastries on concrete sidewalks.
 The city breathes in rhythm with a million heartbeats,
+
 each person carrying dreams and deadlines in equal measure.
 Skyscrapers reach toward clouds that drift like cotton,
 while far below, subway trains rumble through tunnels.
@@ -39,8 +41,8 @@ a endless song of ambition, struggle, and hope.
 """
 
 splitter = RecursiveCharacterTextSplitter(
-    chunk_size=250,
-    chunk_overlap=70,
+    chunk_size=750,
+    chunk_overlap=0,
 )
 
 parts = splitter.create_documents([long_text])
@@ -51,7 +53,24 @@ parts = splitter.create_documents([long_text])
 
 llm = ChatOpenAI(model="gpt-5-nano", temperature=0)
 
-chain_sumarize = load_summarize_chain(llm, chain_type="map_reduce", verbose=True)
-
+# "stuff": Combines all documents into a single prompt (best for shorter texts).
+print("----------Stuff----------")
+chain_sumarize = load_summarize_chain(llm=llm, chain_type="stuff", verbose=True)
 result = chain_sumarize.invoke({"input_documents": parts})
-print(result)
+print(result['output_text'])
+
+
+# "map_reduce": Summarizes chunks individually (map) then combines summaries (reduce).
+print("----------Map Reduce----------")
+chain_sumarize = load_summarize_chain(llm=llm, chain_type="map_reduce", verbose=True)
+result = chain_sumarize.invoke({"input_documents": parts})
+print(result['output_text'])
+
+
+# "refine": Iteratively refines the summary by processing chunks sequentially.
+print("----------Refine----------")
+chain_sumarize = load_summarize_chain(llm=llm, chain_type="refine", verbose=True)
+result = chain_sumarize.invoke({"input_documents": parts})
+print(result['output_text'])
+print("-"*50)
+

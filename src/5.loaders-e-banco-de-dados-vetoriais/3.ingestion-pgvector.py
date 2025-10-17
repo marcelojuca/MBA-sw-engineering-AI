@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
@@ -15,14 +14,18 @@ for k in ("OPENAI_API_KEY", "PINECONE_API_KEY", "PINECONE_INDEX_NAME"):
     if not os.getenv(k):
         raise RuntimeError(f"Environment variable {k} is not set")
 
-current_dir = Path(__file__).parent
-pdf_path = current_dir / "sample.pdf"
+# Get the directory where this script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
+pdf_path = os.path.join(script_dir, "sample.pdf")
 
 doc = PyPDFLoader(pdf_path).load()
 
 splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000, chunk_overlap=150, add_start_index=False
+    chunk_size=1000, 
+    chunk_overlap=150, 
+    add_start_index=False
 ).split_documents(doc)
+
 if not splitter:
     raise RuntimeError("No chunks were created")
 
@@ -53,4 +56,4 @@ store = PineconeVectorStore(
     pinecone_api_key=os.getenv("PINECONE_API_KEY"),
 )
 
-# store.add_documents(documents=enriched_docs, ids=ids)
+store.add_documents(documents=enriched_docs, ids=ids)

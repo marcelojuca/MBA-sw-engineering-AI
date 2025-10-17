@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-from langchain.chains.summarize import load_summarize_chain
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
@@ -76,7 +75,9 @@ chain = {"text": combine_documents} | summarize_prompt | llm | StrOutputParser()
 
 # Execute the summarization
 result = chain.invoke(parts)
+print("-"*50)
 print(result)
+print("-"*50)
 
 
 # chain_summarize = load_summarize_chain(llm, chain_type="stuff", verbose=False)

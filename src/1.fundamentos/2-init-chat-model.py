@@ -3,8 +3,10 @@ from langchain.chat_models import init_chat_model
 
 load_dotenv()
 
-gemini = init_chat_model(
-    "gemini-2.5-flash", temperature=0, model_provider="google_genai"
+llm_gemini = init_chat_model(
+    model="gemini-2.5-flash", 
+    temperature=0, 
+    model_provider="google_genai"
 )
-answer_gemini = gemini.invoke("Hello World!")
-print(answer_gemini.content)
+message = llm_gemini.invoke("Hello World!")
+print(message.content)

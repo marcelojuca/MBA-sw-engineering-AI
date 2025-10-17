@@ -21,4 +21,6 @@ translate = template_translate | llm | StrOutputParser()
 pipeline = {"text": translate} | template_summary | llm | StrOutputParser()
 
 result = pipeline.invoke({"initial_text": "Ola, como voce esta?"})
+print("-"*50)
 print(result)
+print("-"*50)

@@ -40,21 +40,31 @@ This urban orchestra plays from dawn until dusk,
 a endless song of ambition, struggle, and hope.
 """
 
-splitter = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=50)
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=300, 
+    chunk_overlap=50
+)
+
 parts = splitter.create_documents([long_text])
 
 llm = ChatOpenAI(model="gpt-5-nano", temperature=0)
 
+# Key Benefits of map():
+#   - Parallel Processing: All summaries are generated concurrently, improving efficiency
+#   - Batch Processing: Handles multiple documents at once instead of sequentially
+#   - Scalability: Great for large document collections
+
 map_prompt = PromptTemplate.from_template("write a summary of the following text: {context}")
 map_chain = map_prompt | llm | StrOutputParser()
-prepre_map_inputs = RunnableLambda(lambda x: [{"context": part.page_content} for part in x])
-map_stage = prepre_map_inputs | map_chain.map()
+pre_map_inputs = RunnableLambda(lambda x: [{"context": part.page_content} for part in x])
+map_stage = pre_map_inputs | map_chain.map()
 
 reduce_prompt = PromptTemplate.from_template("combine the following summaries into a single summary: {context}")
 reduce_chain = reduce_prompt | llm | StrOutputParser()
-
-prepre_reduce_inputs = RunnableLambda(lambda x: [{"summaries": "\n".join(x)}])
-pipeline = map_stage | prepre_reduce_inputs | reduce_chain
+pre_reduce_inputs = RunnableLambda(lambda x: [{"summaries": "\n".join(x)}])
+pipeline = map_stage | pre_reduce_inputs | reduce_chain
 
 result = pipeline.invoke(parts)
+print("-"*50)
 print(result)
+print("-"*50)

@@ -7,7 +7,7 @@ from langchain_openai import ChatOpenAI
 load_dotenv()
 
 
-@tool("calculator", return_direct=True)
+@tool("calculator")
 def calculator(expression: str) -> str:
     """Evaluate a simple mathematical expression and returns the result."""
     try:
@@ -48,7 +48,27 @@ agent_executor = AgentExecutor(
     handle_parsing_errors="Invalid format. Either provide an Action with Action Input or a Final Answer only.",
 )
 
+print("-"*50)
+result = agent_executor.invoke(
+    {"input": "What is the capital of Brazil?"}
+)
+print(result)
+print("-"*50)
+
 result = agent_executor.invoke(
     {"input": "What is the capital of Iran? And how much is 2 + 2?"}
 )
 print(result)
+print("-"*50)
+
+result = agent_executor.invoke(
+    {"input": "What is the capital of Brazil? And how much is 3 + 3?"}
+)
+print(result)
+print("-"*50)
+
+result = agent_executor.invoke(
+    {"input": "What is the capital of Italy and Spain? And how much is four plus four?"}
+)
+print(result)
+print("-"*50)
