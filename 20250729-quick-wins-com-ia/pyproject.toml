@@ -1,0 +1,24 @@
+[project]
+name = "fc"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9,<3.14"
+dependencies = [
+    "beautifulsoup4>=4.14.2",
+    "langchain>=0.3.27",
+    "langchain-google-genai>=2.1.12",
+    "langchain-openai>=0.3.35",
+    "langchain-text-splitters>=0.3.0",
+    "pypdf>=6.1.1",
+    "python-dotenv>=1.1.1",
+    "pydantic>=2.10.0",
+    "typing-extensions>=4.12.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "langchain-community>=0.3.31",
+    "psycopg[binary]>=3.2.1",
+    "pgvector>=0.3.6",
+    "langchain-postgres>=0.0.13",
+    "langchain-pinecone>=0.2.12",
+]

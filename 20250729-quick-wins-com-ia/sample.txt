@@ -1,0 +1,1 @@
+This is a sample PDF content for testing LangChain PDF loader functionality. It contains some text that can be split into chunks for vector database storage and retrieval.
