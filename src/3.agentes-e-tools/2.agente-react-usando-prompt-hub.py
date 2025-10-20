@@ -40,7 +40,11 @@ prompt = hub.pull("hwchase17/react")
 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 tools = [calculator, web_search_mock]
-agent_chain = create_react_agent(llm=llm, tools=tools, prompt=prompt)
+agent_chain = create_react_agent(
+    llm=llm, 
+    tools=tools, 
+    prompt=prompt
+)
 agent_executor = AgentExecutor(
     agent=agent_chain,
     tools=tools,
