@@ -65,9 +65,10 @@ RESPONDA A "PERGUNTA DO USUÁRIO"
 custom_rag_prompt = PromptTemplate.from_template(PROMPT_TEMPLATE)
 
 # Create the RAG chain
+# Question vectorization (handled by store_pgvector.as_retriever())
 rag_chain = (
     {
-        "contexto": store_pgvector.as_retriever() | format_docs, # retrieve the documents from the vector store and format the documents to a string
+        "contexto": store_pgvector.as_retriever(search_kwargs={"k": 10}) | format_docs, # retrieve the documents from the vector store and format the documents to a string
         "pergunta": RunnablePassthrough() # the question will be unchanged and propagated to the next step
     }
     | custom_rag_prompt
