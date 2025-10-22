@@ -1,0 +1,13 @@
+[project]
+name = "20250902-criacao-e-tipos-de-prompt"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "langchain==0.3.27",
+    "langchain-openai==0.3.32",
+    "openai==1.102.0",
+    "python-dotenv==1.1.1",
+    "rich==14.1.0",
+]

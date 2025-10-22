@@ -1,3 +1,5 @@
+import os
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -76,7 +78,13 @@ result_content = f"""# Prompt Chaining Result
 
 """
 
-with open("prompt_chaining_result.md", "w", encoding="utf-8") as f:
+# Get the directory where this script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(script_dir, "7-prompt_chaining_result.md")
+
+with open(file_path, "w", encoding="utf-8") as f:
     f.write(result_content)
 
-print("Resultado salvo em prompt_chaining_result.md")
+print("-"*50)
+print(f"Resultado salvo em {file_path}")
+print("-"*50)
