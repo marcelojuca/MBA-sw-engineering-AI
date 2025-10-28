@@ -1,6 +1,6 @@
 import grpc
-import hello_pb2  # Data classes for the protobuf file "hello.proto"
-import hello_pb2_grpc  # Service stubs and servicer classes for the protobuf file "hello.proto"
+import generated.hello_pb2 as hello_pb2  # Data classes for the protobuf file "hello.proto"
+import generated.hello_pb2_grpc as hello_pb2_grpc  # Service stubs and servicer classes for the protobuf file "hello.proto"
 
 def run():
     # Connect to server (insecure for demo)

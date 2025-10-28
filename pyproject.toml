@@ -7,4 +7,5 @@ requires-python = ">=3.14"
 dependencies = [
     "grpcio>=1.76.0",
     "grpcio-tools>=1.76.0",
+    "flatbuffers>=24.3.25",
 ]
