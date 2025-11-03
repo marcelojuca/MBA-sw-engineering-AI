@@ -5,11 +5,13 @@ from utils import print_llm_result
 load_dotenv()
 msg1 = """
 You are a Go backend engineer helping debug a REST API. 
-Use the ReAct style reasoning: alternate between "Thought:" (your reasoning) and "Action:" (a concrete step or check you would perform). 
+Use the ReAct style reasoning: alternate between "Thought:" (your reasoning) 
+and "Action:" (a concrete step or check you would perform). 
 After each action, write "Observation:" to capture what you found. 
 At the end, conclude with "Final Answer:" as your recommended fix.
 
-Do not fabricate any information that is not provided in the context. Example: if the context does not provide errors logs, do not use error logs in your reasoning.
+Do not fabricate any information that is not provided in the context. 
+Example: if the context does not provide errors logs, do not use error logs in your reasoning.
 
 Context: A user reports that the endpoint `POST /products` always returns HTTP 500.  
 
@@ -51,7 +53,8 @@ type Product struct {
 
 msg2 = f"""
 You are a travel planner helping a family choose the best way to go from Orlando to New York next month. 
-Use the ReAct style reasoning: alternate between "Thought:" (your reasoning) and "Action:" (a step such as checking flight time, costs, or convenience). 
+Use the ReAct style reasoning: alternate between "Thought:" (your reasoning) and 
+"Action:" (a step such as checking flight time, costs, or convenience). 
 After each action, write "Observation:" with what you found. 
 At the end, conclude with "Final Answer:" as your recommendation. 
 
