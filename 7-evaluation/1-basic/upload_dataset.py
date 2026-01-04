@@ -1,5 +1,9 @@
 """Upload dataset to LangSmith with metadata support."""
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 from shared.clients import get_langsmith_client
 from shared.datasets import upload_langsmith_dataset
 
