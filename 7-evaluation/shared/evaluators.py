@@ -49,7 +49,6 @@ def prepare_with_reference(run, example, input_key="code"):
     Use for:
     - labeled_criteria
     - labeled_score_string
-    - embedding_distance
 
     Args:
         run: LangSmith run object
@@ -63,4 +62,30 @@ def prepare_with_reference(run, example, input_key="code"):
         "prediction": run.outputs.get("output", ""),
         "input": example.inputs.get(input_key, ""),
         "reference": example.outputs
+    }
+
+
+def prepare_for_embedding_distance(run, example, input_key="code", reference_key="summary"):
+    """
+    Prepare data for embedding distance evaluator (requires string reference).
+
+    Use for:
+    - embedding_distance
+
+    Args:
+        run: LangSmith run object
+        example: Dataset example
+        input_key: Key to extract from inputs (default: "code")
+        reference_key: Key to extract string from outputs (default: "summary")
+
+    Returns:
+        {"prediction": str, "input": str, "reference": str}
+    """
+    reference = example.outputs
+    if isinstance(reference, dict):
+        reference = reference.get(reference_key, "")
+    return {
+        "prediction": run.outputs.get("output", ""),
+        "input": example.inputs.get(input_key, ""),
+        "reference": str(reference)
     }

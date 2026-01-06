@@ -10,7 +10,7 @@ from pathlib import Path
 
 from shared.clients import get_openai_client
 from shared.prompts import load_yaml_prompt, execute_text_prompt
-from shared.evaluators import prepare_with_reference
+from shared.evaluators import prepare_for_embedding_distance
 
 # Configuration
 DATASET_NAME = "evaluation_basic_dataset"
@@ -36,7 +36,7 @@ def run_embedding_evaluation(inputs: dict) -> dict:
 evaluators = [
     LangChainStringEvaluator(
         "embedding_distance",
-        prepare_data=prepare_with_reference
+        prepare_data=prepare_for_embedding_distance
     )
 ]
 

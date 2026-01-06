@@ -6,6 +6,7 @@ Expected: LOW scores in conciseness and coherence.
 """
 from langsmith import evaluate
 from langsmith.evaluation import LangChainStringEvaluator
+from langchain_openai import ChatOpenAI
 from pathlib import Path
 
 from shared.clients import get_openai_client
@@ -18,6 +19,9 @@ BASE_DIR = Path(__file__).parent
 
 # Setup
 oai_client = get_openai_client()
+
+# Use gpt-4o-mini for evaluations to avoid GPT-4 rate limits
+eval_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 
 def run_bad_verbose(inputs: dict) -> dict:
@@ -32,27 +36,27 @@ evaluators = [
     # Detects verbosity (bad_verbose should have low score)
     LangChainStringEvaluator(
         "score_string",
-        config={"criteria": "conciseness", "normalize_by": 10},
+        config={"criteria": "conciseness", "normalize_by": 10, "llm": eval_llm},
         prepare_data=prepare_with_input
     ),
 
     # Detects incoherence from contradictory instructions (bad_verbose should have low score)
     LangChainStringEvaluator(
         "score_string",
-        config={"criteria": "coherence", "normalize_by": 10},
+        config={"criteria": "coherence", "normalize_by": 10, "llm": eval_llm},
         prepare_data=prepare_with_input
     ),
 
     # Additional metrics for context
     LangChainStringEvaluator(
         "score_string",
-        config={"criteria": "helpfulness", "normalize_by": 10},
+        config={"criteria": "helpfulness", "normalize_by": 10, "llm": eval_llm},
         prepare_data=prepare_with_input
     ),
 
     LangChainStringEvaluator(
         "score_string",
-        config={"criteria": "detail", "normalize_by": 10},
+        config={"criteria": "detail", "normalize_by": 10, "llm": eval_llm},
         prepare_data=prepare_with_input
     ),
 ]
@@ -71,7 +75,7 @@ results = evaluate(
     data=DATASET_NAME,
     evaluators=evaluators,
     experiment_prefix="BadVerbose_Test",
-    max_concurrency=2
+    max_concurrency=1
 )
 
 print("="*80)
