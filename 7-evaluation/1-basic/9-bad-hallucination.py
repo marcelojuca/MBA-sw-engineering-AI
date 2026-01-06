@@ -75,7 +75,7 @@ results = evaluate(
     data=DATASET_NAME,
     evaluators=evaluators,
     experiment_prefix="BadHallucination_Test",
-    max_concurrency=2
+    max_concurrency=1
 )
 
 print("="*80)

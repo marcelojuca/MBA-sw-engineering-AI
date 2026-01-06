@@ -1,0 +1,22 @@
+[project]
+name = "20250902-criacao-e-tipos-de-prompt"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13, <3.14"
+dependencies = [
+    "langchain==0.3.27",
+    "langchain-community==0.3.30",
+    "langchain-openai==0.3.34",
+    "langfuse==3.6.1",
+    "openai==2.1.0",
+    "openevals==0.1.0",
+    "python-dotenv==1.1.1",
+    "pyyaml==6.0.3",
+    "rich==14.1.0",
+]
+
+[tool.uv.workspace]
+members = [
+    "7-evaluation",
+]

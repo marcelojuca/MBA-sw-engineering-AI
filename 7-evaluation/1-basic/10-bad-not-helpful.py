@@ -6,6 +6,7 @@ Expected: LOW scores in helpfulness, detail, and depth.
 """
 from langsmith import evaluate
 from langsmith.evaluation import LangChainStringEvaluator
+from langchain_openai import ChatOpenAI
 from pathlib import Path
 
 from shared.clients import get_openai_client
@@ -18,6 +19,8 @@ BASE_DIR = Path(__file__).parent
 
 # Setup
 oai_client = get_openai_client()
+# Use gpt-4o-mini for evaluators to avoid rate limiting issues with gpt-4
+eval_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 
 def run_bad_not_helpful(inputs: dict) -> dict:
@@ -32,34 +35,34 @@ evaluators = [
     # Detects not_helpful (bad_not_helpful should have low score)
     LangChainStringEvaluator(
         "score_string",
-        config={"criteria": "helpfulness", "normalize_by": 10},
+        config={"criteria": "helpfulness", "normalize_by": 10, "llm": eval_llm},
         prepare_data=prepare_with_input
     ),
 
     # Detects lack of details (bad_not_helpful should have low score)
     LangChainStringEvaluator(
         "score_string",
-        config={"criteria": "detail", "normalize_by": 10},
+        config={"criteria": "detail", "normalize_by": 10, "llm": eval_llm},
         prepare_data=prepare_with_input
     ),
 
     # Detects superficial analysis (bad_not_helpful should have low score)
     LangChainStringEvaluator(
         "score_string",
-        config={"criteria": "depth", "normalize_by": 10},
+        config={"criteria": "depth", "normalize_by": 10, "llm": eval_llm},
         prepare_data=prepare_with_input
     ),
 
     # Additional metrics for context
     LangChainStringEvaluator(
         "score_string",
-        config={"criteria": "coherence", "normalize_by": 10},
+        config={"criteria": "coherence", "normalize_by": 10, "llm": eval_llm},
         prepare_data=prepare_with_input
     ),
 
     LangChainStringEvaluator(
         "score_string",
-        config={"criteria": "conciseness", "normalize_by": 10},
+        config={"criteria": "conciseness", "normalize_by": 10, "llm": eval_llm},
         prepare_data=prepare_with_input
     ),
 ]

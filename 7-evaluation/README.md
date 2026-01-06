@@ -213,6 +213,122 @@ python run.py
 
 ---
 
+## Funções de Preparação de Dados (`shared/evaluators.py`)
+
+Os evaluators do LangSmith precisam de dados formatados de formas diferentes dependendo do tipo de avaliação. O arquivo `shared/evaluators.py` fornece três funções helper:
+
+### Exemplo Concreto
+
+Considere um exemplo do dataset de code review:
+
+```json
+{
+  "inputs": {
+    "code": "func fetch(url string) string { resp, _ := http.Get(url)... }"
+  },
+  "outputs": {
+    "findings": [{"type": "missing_timeout", "line": 8}, {"type": "ignored_error", "line": 8}],
+    "summary": "Adicionar timeout via contexto..."
+  }
+}
+```
+
+E imagine que o LLM produziu:
+
+```json
+{
+  "output": "{\"findings\": [{\"type\": \"no_timeout\", \"line\": 8}], \"summary\": \"Add timeout\"}"
+}
+```
+
+### `prepare_prediction_only`
+
+```python
+{"prediction": "{\"findings\": [...], \"summary\": \"Add timeout\"}"}
+```
+
+**Retorna:** Apenas a saída do LLM.
+
+**Uso:** Validação de formato (JSON válido? Schema correto?) — não precisa do input ou referência.
+
+**Evaluators:** `json_validity`, `json_schema`
+
+---
+
+### `prepare_with_input`
+
+```python
+{
+  "prediction": "{\"findings\": [...], \"summary\": \"Add timeout\"}",
+  "input": "func fetch(url string) string { resp, _ := http.Get(url)... }"
+}
+```
+
+**Retorna:** Saída do LLM + código original.
+
+**Uso:** Perguntar a um LLM juiz: "Dado este código Go, a review é relevante e precisa?" — precisa do código para julgar, mas não existe "resposta correta".
+
+**Evaluators:** `criteria` (binário), `score_string` (contínuo), critérios customizados
+
+---
+
+### `prepare_with_reference`
+
+```python
+{
+  "prediction": "{\"findings\": [...], \"summary\": \"Add timeout\"}",
+  "input": "func fetch(url string) string { resp, _ := http.Get(url)... }",
+  "reference": {
+    "findings": [{"type": "missing_timeout", "line": 8}, {"type": "ignored_error", "line": 8}],
+    "summary": "Adicionar timeout via contexto..."
+  }
+}
+```
+
+**Retorna:** Saída do LLM + código + resposta esperada (ground truth).
+
+**Uso:** Comparar: "O LLM encontrou os mesmos problemas que nossa referência?" — agora pode medir se encontrou `missing_timeout`, `ignored_error`, etc.
+
+**Evaluators:** `labeled_criteria`, `labeled_score_string`, `embedding_distance`
+
+---
+
+### Resumo Visual
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        DATASET                                  │
+│  inputs.code ──────────────────────┐                            │
+│  outputs (reference) ──────────────┼──────────────┐             │
+└────────────────────────────────────┼──────────────┼─────────────┘
+                                     │              │
+┌────────────────────────────────────┼──────────────┼─────────────┐
+│                        LLM RUN                    │             │
+│  run.outputs.output (prediction) ──┼──────────────┼──────┐      │
+└────────────────────────────────────┼──────────────┼──────┼──────┘
+                                     │              │      │
+                                     ▼              ▼      ▼
+┌─────────────────┐  ┌─────────────────────┐  ┌───────────────────┐
+│ prediction_only │  │   with_input        │  │  with_reference   │
+├─────────────────┤  ├─────────────────────┤  ├───────────────────┤
+│ prediction ✓    │  │ prediction ✓        │  │ prediction ✓      │
+│                 │  │ input ✓             │  │ input ✓           │
+│                 │  │                     │  │ reference ✓       │
+└─────────────────┘  └─────────────────────┘  └───────────────────┘
+   "É JSON válido?"    "A review é boa        "Encontrou os mesmos
+                        para este código?"     problemas?"
+```
+
+### Tabela de Referência
+
+| Função | Tem Input | Tem Reference | Evaluators |
+|--------|-----------|---------------|------------|
+| `prepare_prediction_only` | ❌ | ❌ | json_validity, json_schema |
+| `prepare_with_input` | ✅ | ❌ | criteria, score_string |
+| `prepare_with_reference` | ✅ | ✅ | labeled_criteria, embedding_distance |
+
+---
+
 ## Recursos Adicionais
 
 - **Documentação técnica completa:** Veja [`AGENTS.md`](AGENTS.md)
